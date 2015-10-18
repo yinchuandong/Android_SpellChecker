@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">作文评分</string>
+    <string name="action_settings">Settings</string>
+    <string name="main_edit">编辑</string>
+    <string name="main_correct">评分</string>
+    
+
+</resources>
