@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+environment/project/com.android.toolchain.gcc.1553056861/ANDROID_NDK/delimiter=\:
+environment/project/com.android.toolchain.gcc.1553056861/ANDROID_NDK/operation=append
+environment/project/com.android.toolchain.gcc.1553056861/ANDROID_NDK/value=/Users/yinchuandong/android-ndk-r10e
+environment/project/com.android.toolchain.gcc.1553056861/CPLUS_INCLUDE_PATH/delimiter=\:
+environment/project/com.android.toolchain.gcc.1553056861/CPLUS_INCLUDE_PATH/operation=append
+environment/project/com.android.toolchain.gcc.1553056861/CPLUS_INCLUDE_PATH/value=/usr/local/include/c++/4.9.2
+environment/project/com.android.toolchain.gcc.1553056861/C_INCLUDE_PATH/delimiter=\:
+environment/project/com.android.toolchain.gcc.1553056861/C_INCLUDE_PATH/operation=append
+environment/project/com.android.toolchain.gcc.1553056861/C_INCLUDE_PATH/value=/usr/local/include
+environment/project/com.android.toolchain.gcc.1553056861/append=true
+environment/project/com.android.toolchain.gcc.1553056861/appendContributed=true

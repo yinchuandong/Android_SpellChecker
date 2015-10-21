@@ -1,9 +1,16 @@
 package com.yin.spellchecker;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.yin.spell.RealWordCorrect;
+import com.yin.spellchecker.lib.SpellChecker;
+
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +52,27 @@ public class MainActivity extends Activity {
 		fragmentTransac.add(R.id.main_frag_layout, fragCorrect);
 		fragmentTransac.hide(fragCorrect);
 		fragmentTransac.commit();
+		
+		new Thread(){
+			@Override
+			public void run(){
+				long start = System.currentTimeMillis();
+				SpellChecker checker = new SpellChecker();
+//				String[] path = checker.init();
+//				Log.d("path", path[2]+"---");
+//				checker.test();
+//				HashMap<String, String> map = checker.getTranMap();
+//				ArrayList<String> candiStrings = checker.loadCandidateMap(new String[]{"i", "like", "you"});
+				
+//				HashMap<String, Double> initProb = checker.loadInitProb(new String[]{"i", "like", "you"});
+				HashMap<String, Double> tranProb = checker.loadTranProb(new String[]{"i|like", "he|like", "you|like"});
+//				RealWordCorrect.main(null);
+				
+				long end = System.currentTimeMillis();
+				long delay = end - start;
+				System.out.println("delay: " + delay + "ms");
+			}
+		}.start();
 	}
 	
 	
