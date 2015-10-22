@@ -1,0 +1,29 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingLeft="10dp"
+    android:background="@color/white"
+     >
+
+    <TextView
+        android:id="@+id/crt_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/crt_list_view"
+        android:padding="5dp"
+        android:text="he am a boys. there is lots of appe whih I like"
+        android:textSize="26sp"
+        android:fontFamily="Roboto-Light"
+         />
+
+    <ListView
+        android:id="@+id/crt_list_view"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@color/grey" >
+    </ListView>
+    
+</RelativeLayout>

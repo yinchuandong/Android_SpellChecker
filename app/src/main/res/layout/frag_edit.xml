@@ -1,0 +1,19 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="30dp"
+    android:background="@color/white"
+    >
+
+    <EditText
+        android:id="@+id/edt_edit_text" 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp"
+        android:gravity="top"
+        android:background="@drawable/shape_edit_corner"
+        android:hint="请输入英语作文，系统将会自动纠错。如：he am a boys"
+        />
+
+</RelativeLayout>
