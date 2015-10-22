@@ -2,6 +2,7 @@ package com.yin.spellchecker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.yin.spell.RealWordCorrect;
 import com.yin.spellchecker.lib.SpellChecker;
@@ -61,12 +62,15 @@ public class MainActivity extends Activity {
 //				String[] path = checker.init();
 //				Log.d("path", path[2]+"---");
 //				checker.test();
-//				HashMap<String, String> map = checker.getTranMap();
-//				ArrayList<String> candiStrings = checker.loadCandidateMap(new String[]{"i", "like", "you"});
 				
+				HashMap<String, String> map = checker.getTranMap();
+//				ArrayList<String> candiStrings = checker.loadCandidateMap(new String[]{"i", "like", "you"});
 //				HashMap<String, Double> initProb = checker.loadInitProb(new String[]{"i", "like", "you"});
-				HashMap<String, Double> tranProb = checker.loadTranProb(new String[]{"i|like", "he|like", "you|like"});
+//				HashMap<String, Double> tranProb = checker.loadTranProb(new String[]{"i|like", "he|like", "you|like"});
+//				HashSet<String> set = checker.loadOxfordWords();
+				
 //				RealWordCorrect.main(null);
+				
 				
 				long end = System.currentTimeMillis();
 				long delay = end - start;

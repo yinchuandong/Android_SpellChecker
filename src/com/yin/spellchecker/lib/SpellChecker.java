@@ -2,6 +2,7 @@ package com.yin.spellchecker.lib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class SpellChecker {
 
@@ -12,6 +13,13 @@ public class SpellChecker {
 	public native String[] init();
 	public native void test();
 	public native HashMap<String, String> getTranMap();
+	
+	/**
+	 * 加载牛津词典
+	 * @return
+	 */
+	public native HashSet<String> loadOxfordWords();
+	
 	/**
 	 * 
 	 * @param wordArr 原始句子切分的词语

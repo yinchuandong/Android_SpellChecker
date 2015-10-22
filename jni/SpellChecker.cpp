@@ -3,6 +3,8 @@
 #include <string>
 #include <jni.h>
 #include <set>
+#include <map>
+#include <hash_map>
 #include <vector>
 #include <android/log.h>
 
@@ -68,6 +70,42 @@ JNIEXPORT jobjectArray JNICALL Java_com_yin_spellchecker_lib_SpellChecker_init(
 		env->SetObjectArrayElement(ret, i, env->NewStringUTF(arr[i]));
 	}
 	return ret;
+}
+
+
+/**
+ * 加载牛津词典,只有单词
+ */
+JNIEXPORT jobject JNICALL Java_com_yin_spellchecker_lib_SpellChecker_loadOxfordWords(JNIEnv *env, jobject obj){
+	jclass cls_HashSet = env->FindClass("java/util/HashSet");
+	jmethodID construct = env->GetMethodID(cls_HashSet, "<init>", "()V");
+	jobject obj_HashSet = env->NewObject(cls_HashSet, construct, "");
+	jmethodID HashSet_add = env->GetMethodID(cls_HashSet,"add","(Ljava/lang/Object;)Z");
+
+	FILE* file = NULL;
+	if ((file = fopen(PATH_OXFORD_WORDS, "r")) == NULL) {
+		LOGD("open false PATH_OXFORD_WORDS");
+		return obj_HashSet;
+	}
+
+	char buff[128];
+	int count = 0;
+	set<string> w_set;
+	while (!feof(file)) {
+		fgets(buff, 128, file);
+		jstring word = env->NewStringUTF(buff);
+		env->CallObjectMethod(obj_HashSet, HashSet_add, word);
+		env->DeleteLocalRef(word);
+//		env->ReleaseStringUTFChars(word, buff);
+		count++;
+		if (count % 1000 == 0){
+			LOGD("loadOxfordWord: %d ", count);
+		}
+//		break;
+	}
+//	delete buff;
+	fclose(file);
+	return obj_HashSet;
 }
 
 /**
@@ -250,39 +288,21 @@ JNIEXPORT jobject JNICALL Java_com_yin_spellchecker_lib_SpellChecker_getTranMap(
 		return hashMap;
 	}
 
-//	set<string> sa;
-
-	vector<string> he;
-	set<string> wordSet;
-	set<string>::iterator iter;
-	wordSet.insert("like");
-
-//	iter = wordSet.find("like");
-//	if (iter == wordSet.end()) {
-//		LOGD("not found");
-//	}else{
-//		LOGD("founded");
-//	}
-
+	map<string,string> wordMap;
 
 	LOGD("filename %s", filename);
 	int count = 0;
 	char* buff = new char[128];
 	const char c[] = "\t";
+	char* iWord;
+	char* jWord;
+	char* prob;
+	char tmp[100];
 	while (!feof(file)) {
 		fgets(buff, 128, file);
 		count++;
-//		if (count % 100 == 0) {
-//			char* p = strtok(buff, c);
-//			char* iWord = p;
-//			char* jWord = strtok(NULL, c);
-//			char* prob = strtok(NULL, c);
-//			double num = atof(prob);
-//			LOGD("%s - %s - %s - %f\n", iWord, jWord, prob, num);
-//		}
 
-		char* p = strtok(buff, c);
-		char* iWord = p;
+		iWord = strtok(buff, c);
 //		if (strcmp(iWord, "like") != 0) {
 //			continue;
 //		}
@@ -291,30 +311,27 @@ JNIEXPORT jobject JNICALL Java_com_yin_spellchecker_lib_SpellChecker_getTranMap(
 //			continue;
 //		}
 
-		char* jWord = strtok(NULL, c);
-		char* prob = strtok(NULL, c);
+		jWord = strtok(NULL, c);
+		prob = strtok(NULL, c);
 
-		char tmp[100];
+		memset(tmp, 0, 100);
 		sprintf(tmp, "%s|%s", iWord, jWord);
+		wordMap.insert(make_pair(iWord, jWord));
 
-		jstring key1 = env->NewStringUTF(tmp);
-		jstring val1 = env->NewStringUTF(prob);
-		env->CallObjectMethod(hashMap, hashmap_put, key1, val1);
 
-		env->DeleteLocalRef(key1);
-		env->DeleteLocalRef(val1);
+//		jstring key1 = env->NewStringUTF(tmp);
+//		jstring val1 = env->NewStringUTF(prob);
+//		env->CallObjectMethod(hashMap, hashmap_put, key1, val1);
+//		env->DeleteLocalRef(key1);
+//		env->DeleteLocalRef(val1);
 
-//		delete key1;
-//		delete val1;
-//		delete p;
-//		delete iWord;
-//		delete jWord;
-//		delete prob;
-		if (count % 10000 == 0) {
-			LOGD("now is reading: %d lines", count);
-		}
+//		if (count % 10000 == 0) {
+//			LOGD("now is reading: %d lines", count);
+//		}
 
 	}
+	delete buff;
+//	LOGD("word set size: %d", wordSet.size());
 	fclose(file);
 	return hashMap;
 }

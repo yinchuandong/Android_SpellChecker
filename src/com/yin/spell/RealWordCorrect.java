@@ -2,6 +2,7 @@ package com.yin.spell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.yin.spellchecker.lib.SpellChecker;
 
@@ -131,8 +132,8 @@ public class RealWordCorrect {
 		}
 		return result;
 	}
-
-	public void run(String article) {
+	
+	private void preBuild(String article){
 		if (!article.endsWith(".")) {
 			article += ".";
 		}
@@ -142,7 +143,9 @@ public class RealWordCorrect {
 		oldWordMatrix = new String[oldSentences.length][]; 
 		newWordMatrix = new String[oldSentences.length][];
 		punctArr = new String[oldSentences.length];
-
+		
+		HashSet<String> tmpItemList = new HashSet<String>();
+		//预处理
 		int offset = 0;
 		for (int i = 0; i < oldSentences.length; i++) {
 			//获取每一句对应的标点符号
@@ -151,23 +154,37 @@ public class RealWordCorrect {
 			
 			String oldSent = oldSentences[i].trim();
 			oldWordMatrix[i] = oldSent.split("\\s");
-			init(oldWordMatrix[i]);
-			runBigram();
-			newWordMatrix[i] = decode();
-			
-			for (int j = 0; j < newWordMatrix[i].length; j++) {
-				if (i == 0) {
-					newWordMatrix[i][0] = CorpusUtil.toUpperCaseFirstChar(newWordMatrix[i][0]);
-				}
-				if (i > 0 && (punctArr[i - 1].equals(".") || punctArr[i - 1].equals(";"))) {
-					newWordMatrix[i][0] = CorpusUtil.toUpperCaseFirstChar(newWordMatrix[i][0]);
-				}
-				if (newWordMatrix[i][j].equals("i")) {
-					newWordMatrix[i][j] = newWordMatrix[i][j].toUpperCase();
-				}
+			for (int j = 0; j < oldWordMatrix[i].length; j++) {
+				tmpItemList.add(oldWordMatrix[i][j]);
 			}
 		}
-		display();
+		corpusUtil.loadInitProb(tmpItemList);
+		corpusUtil.loadTranProb(tmpItemList);
+		System.out.println("------prebuild end-------");
+	}
+
+	public void run(String article) {
+		preBuild(article);
+		
+//		//进行运算
+//		for (int i = 0; i < oldSentences.length; i++) {
+//			init(oldWordMatrix[i]);
+//			runBigram();
+//			newWordMatrix[i] = decode();
+//			
+//			for (int j = 0; j < newWordMatrix[i].length; j++) {
+//				if (i == 0) {
+//					newWordMatrix[i][0] = CorpusUtil.toUpperCaseFirstChar(newWordMatrix[i][0]);
+//				}
+//				if (i > 0 && (punctArr[i - 1].equals(".") || punctArr[i - 1].equals(";"))) {
+//					newWordMatrix[i][0] = CorpusUtil.toUpperCaseFirstChar(newWordMatrix[i][0]);
+//				}
+//				if (newWordMatrix[i][j].equals("i")) {
+//					newWordMatrix[i][j] = newWordMatrix[i][j].toUpperCase();
+//				}
+//			}
+//		}
+//		display();
 		System.out.println("----------end run------");
 	}
 	
@@ -194,14 +211,14 @@ public class RealWordCorrect {
 		 */
 		String sentence = "";
 		sentence += "he am a boys,I has a apples. you is a boy.";
-		sentence += "there is lots of appe whih I like.";
-		sentence += "he do love you, She done love you.";
-		sentence += "my name as John.";
-		sentence += "I want too eat pizza this afternoon among my parent.";
-		sentence += "the weather is good today.";
-		sentence += "His favourite sports is basketball.";
-		sentence += "he like making faces or telling jokes.";
-		sentence += "he have play tuis thing.";
+//		sentence += "there is lots of appe whih I like.";
+//		sentence += "he do love you, She done love you.";
+//		sentence += "my name as John.";
+//		sentence += "I want too eat pizza this afternoon among my parent.";
+//		sentence += "the weather is good today.";
+//		sentence += "His favourite sports is basketball.";
+//		sentence += "he like making faces or telling jokes.";
+//		sentence += "he have play tuis thing.";
 		System.out.println("原始句子：" + sentence);
 		
 		SpellChecker checker = new SpellChecker();

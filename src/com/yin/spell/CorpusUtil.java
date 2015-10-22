@@ -15,6 +15,9 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.provider.Settings.System;
+import android.util.Log;
+
 
 public class CorpusUtil {
 
@@ -72,7 +75,7 @@ public class CorpusUtil {
 
 //		loadOxfordWords();
 //		loadInitProb();
-		loadTranProb();
+//		loadTranProb();
 //		loadConfusingWord();
 //		loadCandidateList();
 	}
@@ -103,7 +106,7 @@ public class CorpusUtil {
 	/**
 	 * 加载初始概率
 	 */
-	private void loadInitProb(){
+	public void loadInitProb(HashSet<String> words){
 		try {
 			File file = new File(pathArr[1]);
 			BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -113,7 +116,10 @@ public class CorpusUtil {
 				if (lineArr.length < 2) {
 					continue;
 				}
-				String key = lineArr[0] ;
+				String key = lineArr[0];
+				if (!words.contains(key)){
+					continue;
+				}
 				double prob = Double.parseDouble(lineArr[1]);
 				initProbMap.put(key, prob);
 			}
@@ -128,19 +134,18 @@ public class CorpusUtil {
 	/**
 	 * 加载转移概率
 	 */
-	private void loadTranProb(){
+	public void loadTranProb(HashSet<String> words){
 		try {
 			File file = new File(pathArr[2]);
 			BufferedReader reader = new BufferedReader(new FileReader(file));
-//			RandomAccessFile rand = new RandomAccessFile(file, "r");
+//			RandomAccessFile reader = new RandomAccessFile(file, "r");
 			String buff = null;
 			while ((buff = reader.readLine()) != null) {
-//			while ((buff = rand.readLine()) != null) {
-				if (!buff.startsWith("like")) {
-					continue;
-				}
 				String[] lineArr = buff.split("\t");
 				if (lineArr.length < 3) {
+					continue;
+				}
+				if (!words.contains(lineArr[1])){
 					continue;
 				}
 				String key = lineArr[0] + "|" + lineArr[1];
@@ -148,6 +153,7 @@ public class CorpusUtil {
 				tranProbMap.put(key, prob);
 			}
 			reader.close();
+			Log.d("corpus","== tran size=======" + tranProbMap.size());
 //			rand.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -156,28 +162,6 @@ public class CorpusUtil {
 		}
 	}
 	
-	@Deprecated
-	private void loadEmitProb(){
-//		try {
-//			File file = new File(C.PATH_EMIT_PROB);
-//			BufferedReader reader = new BufferedReader(new FileReader(file));
-//			String buff = null;
-//			while ((buff = reader.readLine()) != null) {
-//				String[] lineArr = buff.split("\t");
-//				if (lineArr.length < 3) {
-//					continue;
-//				}
-//				String key = lineArr[0] + "|" + lineArr[1];
-//				double prob = Double.parseDouble(lineArr[2]);
-//				emitProbMap.put(key, prob);
-//			}
-//			reader.close();
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-	}
 	
 	/**
 	 * 加载易混淆词
