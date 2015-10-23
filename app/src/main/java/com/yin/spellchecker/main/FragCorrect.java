@@ -1,11 +1,9 @@
-package com.yin.spellchecker;
+package com.yin.spellchecker.main;
 
 import java.util.ArrayList;
 
-import android.R.integer;
 import android.app.Fragment;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Layout;
 import android.text.SpannableString;
@@ -15,15 +13,18 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StrikethroughSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager.LayoutParams;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.yin.spellchecker.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FragCorrect extends Fragment {
 
@@ -32,7 +33,11 @@ public class FragCorrect extends Fragment {
 	
 	private ListView wordListView;
 	private WordAdapter wordAdapter;
-	
+
+	private String[][] oldWordMatrix;
+	private String[][] newWordMatrix;
+	private String[] punctArr;
+
 	SpannableStringBuilder spannableBuilder;
 	
 	@Override
@@ -48,7 +53,6 @@ public class FragCorrect extends Fragment {
 		this.spannableBuilder = new SpannableStringBuilder();
 		this.wordAdapter = new WordAdapter(this);
 		this.wordListView.setAdapter(wordAdapter);
-		initData();
 	}
 
 	private void initView() {
@@ -56,44 +60,48 @@ public class FragCorrect extends Fragment {
 		wordListView = (ListView)view.findViewById(R.id.crt_list_view);
 	}
 
-	private void initData() {
-		String oldArticle = "there is lots of appe whih I like, he do love you. he really love you";
-		if (!oldArticle.endsWith(".")) {
-			oldArticle += ".";
+	/**
+	 * 外部调用，由ajax返回过来的结果
+	 * @param data
+	 * @param candidate
+	 */
+	public void setCorrectResult(JSONObject data, JSONObject candidate){
+		try {
+			JSONArray oldMatrixJson = data.getJSONArray("oldMatrix");
+			JSONArray newMatrixJson = data.getJSONArray("newMatrix");
+			JSONArray punctJson = data.getJSONArray("punct");
+			oldWordMatrix = new String[oldMatrixJson.length()][];
+			newWordMatrix = new String[newMatrixJson.length()][];
+			punctArr = new String[punctJson.length()];
+
+			for(int i = 0; i < oldWordMatrix.length; i++){
+				JSONArray oldRowJson = oldMatrixJson.getJSONArray(i);
+				JSONArray newRowJson = newMatrixJson.getJSONArray(i);
+				oldWordMatrix[i] = new String[oldRowJson.length()];
+				newWordMatrix[i] = new String[newRowJson.length()];
+				punctArr[i] = punctJson.getString(i);
+
+				for(int j = 0; j < oldWordMatrix[i].length; j++){
+					oldWordMatrix[i][j] = oldRowJson.getString(j);
+					newWordMatrix[i][j] = newRowJson.getString(j);
+				}
+			}
+			displayData();
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
-		oldArticle = oldArticle.replaceAll("\\s+", " ");
 
-		String newArticle = "there are lots of apple which I like, he does love you. he really love you.";
-		newArticle = newArticle.replaceAll("\\s+", " ");
+	}
 
-		String[] oldSentences = oldArticle.split("[,.;]");
-		String[][] oldLines = new String[oldSentences.length][];
-		String[] newSentences = newArticle.split("[,.;]");
-		String[][] newLines = new String[newSentences.length][];
 
-		//标点符号
-		String[] punctArr = new String[oldSentences.length];
-		int offset = 0;
-		for (int i = 0; i < oldSentences.length; i++) {
-			offset += oldSentences[i].length() + 1;
-			punctArr[i] = oldArticle.substring(offset - 1, offset);
-			String oldLine = oldSentences[i].trim();
-			String[] oldLineArr = oldLine.split(" ");
-			oldLines[i] = oldLineArr;
-
-			String newLine = newSentences[i].trim();
-			String[] newLineArr = newLine.split(" ");
-			newLines[i] = newLineArr;
-		}
-
-		
+	private void displayData() {
 		//输出
-		for (int i = 0; i < oldLines.length; i++) {
-			for (int j = 0; j < oldLines[i].length; j++) {
+		for (int i = 0; i < oldWordMatrix.length; i++) {
+			for (int j = 0; j < oldWordMatrix[i].length; j++) {
 				SpannableString oldSpanStr = null;
 				String oldStr = "";
-				String oldWord = oldLines[i][j];
-				String newWord = newLines[i][j];
+				String oldWord = oldWordMatrix[i][j];
+				String newWord = newWordMatrix[i][j];
 				if (!oldWord.equals(newWord)) {
 					oldStr += oldWord + "/" + newWord + " ";
 					oldSpanStr = new SpannableString(oldStr);

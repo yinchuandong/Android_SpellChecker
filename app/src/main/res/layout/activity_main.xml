@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.yin.spellchecker.MainActivity" >
+    tools:context="com.yin.spellchecker.main.MainActivity" >
 
     <FrameLayout
         android:id="@+id/main_frag_layout"

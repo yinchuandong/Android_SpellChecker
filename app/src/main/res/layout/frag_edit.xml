@@ -7,7 +7,7 @@
     >
 
     <EditText
-        android:id="@+id/edt_edit_text" 
+        android:id="@+id/edt_input_edit"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="5dp"
