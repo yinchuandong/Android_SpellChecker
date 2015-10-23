@@ -36,7 +36,9 @@ public class FragEdit extends Fragment {
 		return inputEdit.getText().toString();
 	}
 	
-	
+	public void clearInputText(){
+		inputEdit.setText("");
+	}
 	
 	
 	

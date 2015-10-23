@@ -29,6 +29,7 @@ public class MainActivity extends Activity {
 
 	private TextView editView = null;
 	private TextView correctView = null;
+    private TextView clearView = null;
 
     private FinalHttp finalHttp = null;
 	private OnHttpCallback onHttpCallback = null;
@@ -51,6 +52,7 @@ public class MainActivity extends Activity {
 		
 		editView = (TextView)findViewById(R.id.main_edit_view);
 		correctView = (TextView)findViewById(R.id.main_correct_view);
+        clearView = (TextView)findViewById(R.id.main_clear_view);
 		
 		fragmentManager = getFragmentManager();
 		fragmentTransac = fragmentManager.beginTransaction();
@@ -70,6 +72,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
+                clearView.setEnabled(true);
                 fragmentTransac = fragmentManager.beginTransaction();
                 fragmentTransac.hide(fragCorrect).show(fragEdit).commit();
             }
@@ -79,12 +82,22 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
+                clearView.setEnabled(false);
                 fragmentTransac = fragmentManager.beginTransaction();
                 fragmentTransac.hide(fragEdit).show(fragCorrect).commit();
                 String ariticle = fragEdit.getInputText();
 				AjaxParams params = new AjaxParams();
 				params.put("article", ariticle);
 				finalHttp.post(C.api.correct, params, onHttpCallback);
+            }
+        });
+
+        clearView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragEdit.clearInputText();
+                fragmentTransac = fragmentManager.beginTransaction();
+                fragmentTransac.hide(fragCorrect).show(fragEdit).commit();
             }
         });
 	}

@@ -12,13 +12,14 @@
         android:layout_above="@+id/main_control_layout" >
     </FrameLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/main_control_layout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:gravity="center_vertical|left"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:background="@color/blue_s"
          >
 
@@ -26,7 +27,6 @@
             android:id="@+id/main_edit_view"
             android:layout_width="100dp"
             android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
             android:gravity="center"
             android:text="@string/main_edit"
             android:textSize="30sp"
@@ -37,12 +37,23 @@
             android:id="@+id/main_correct_view"
             android:layout_width="100dp"
             android:layout_height="50dp"
+            android:layout_toRightOf="@+id/main_edit_view"
             android:layout_marginLeft="10dp"
             android:gravity="center"
             android:text="@string/main_correct"
             android:textSize="30sp"
             android:background="@drawable/shape_btn_corner"
              />
-    </LinearLayout>
+        <TextView
+            android:id="@+id/main_clear_view"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:text="@string/main_clear"
+            android:textSize="30sp"
+            android:background="@drawable/shape_btn_corner"
+            />
+    </RelativeLayout>
 
 </RelativeLayout>

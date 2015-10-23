@@ -1,6 +1,8 @@
 package com.yin.spellchecker.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import android.app.Fragment;
 import android.graphics.Color;
@@ -37,6 +39,7 @@ public class FragCorrect extends Fragment {
 	private String[][] oldWordMatrix;
 	private String[][] newWordMatrix;
 	private String[] punctArr;
+    private HashMap<String, ArrayList<String>> candidateSet;
 
 	SpannableStringBuilder spannableBuilder;
 	
@@ -62,14 +65,15 @@ public class FragCorrect extends Fragment {
 
 	/**
 	 * 外部调用，由ajax返回过来的结果
-	 * @param data
-	 * @param candidate
+	 * @param dataJson
+	 * @param candidateJson
 	 */
-	public void setCorrectResult(JSONObject data, JSONObject candidate){
+	public void setCorrectResult(JSONObject dataJson, JSONObject candidateJson){
 		try {
-			JSONArray oldMatrixJson = data.getJSONArray("oldMatrix");
-			JSONArray newMatrixJson = data.getJSONArray("newMatrix");
-			JSONArray punctJson = data.getJSONArray("punct");
+            //处理句子
+			JSONArray oldMatrixJson = dataJson.getJSONArray("oldMatrix");
+			JSONArray newMatrixJson = dataJson.getJSONArray("newMatrix");
+			JSONArray punctJson = dataJson.getJSONArray("punct");
 			oldWordMatrix = new String[oldMatrixJson.length()][];
 			newWordMatrix = new String[newMatrixJson.length()][];
 			punctArr = new String[punctJson.length()];
@@ -86,8 +90,23 @@ public class FragCorrect extends Fragment {
 					newWordMatrix[i][j] = newRowJson.getString(j);
 				}
 			}
-			displayData();
-		} catch (JSONException e) {
+
+            //处理候选词
+            candidateSet = new HashMap<String, ArrayList<String>>();
+            Iterator<String> iter = candidateJson.keys();
+            while(iter.hasNext()){
+                String key = iter.next();
+                JSONArray candiWords = candidateJson.optJSONArray(key);
+                ArrayList<String> tmpList = new ArrayList<String>();
+                for(int i = 0; i < candiWords.length(); i++){
+                    tmpList.add(candiWords.getString(i));
+                }
+                candidateSet.put(key, tmpList);
+            }
+
+            //显示数据
+            displayData();
+        } catch (JSONException e) {
 			e.printStackTrace();
 		}
 
@@ -95,6 +114,7 @@ public class FragCorrect extends Fragment {
 
 
 	private void displayData() {
+        spannableBuilder.clear();
 		//输出
 		for (int i = 0; i < oldWordMatrix.length; i++) {
 			for (int j = 0; j < oldWordMatrix[i].length; j++) {
@@ -154,10 +174,14 @@ public class FragCorrect extends Fragment {
 			this.end = textView.getSelectionEnd();
 			newWord =textView.getText().subSequence(start, end).toString();
 			
-			ArrayList<String> list = new ArrayList<String>();
-			for(int i = 0; i < 10; i++){
-				list.add(oldWord + ":" + newWord + "-" + i);
-			}
+//			ArrayList<String> list = new ArrayList<String>();
+//			for(int i = 0; i < 10; i++){
+//				list.add(oldWord + ":" + newWord + "-" + i);
+//			}
+            ArrayList<String> list = candidateSet.get(oldWord);
+            if(list == null){
+                list = new ArrayList<String>();
+            }
 			wordAdapter.updateData(list);
 			Toast.makeText(getActivity(), "clickdspan:" + this.oldWord, Toast.LENGTH_SHORT).show();
 		}
