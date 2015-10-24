@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/crt_list_view"
         android:padding="5dp"
-        android:text="he am a boys. there is lots of appe whih I like"
         android:textSize="26sp"
         android:fontFamily="Roboto-Light"
          />
