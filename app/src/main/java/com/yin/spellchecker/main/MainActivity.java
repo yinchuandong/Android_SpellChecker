@@ -100,14 +100,13 @@ public class MainActivity extends Activity {
                 clearView.setEnabled(false);
                 fragmentTransac = fragmentManager.beginTransaction();
                 fragmentTransac.hide(fragEdit).show(fragCorrect).commit();
-                String ariticle = fragEdit.getInputText();
+                String article = fragEdit.getInputText();
                 long curMillis = System.currentTimeMillis();
 				AjaxParams params = new AjaxParams();
-				params.put("article", ariticle);
+				params.put("article", article);
                 params.put("token", AppUtil.getToken(MainActivity.this, initParams[0], initParams[1], curMillis));
                 params.put("time", String.valueOf(curMillis));
-//				finalHttp.post(C.api.correct, params, onHttpCallback);
-				finalHttp.post(C.api.base + "Index/register", params, onHttpCallback);
+				finalHttp.post(C.api.correct, params, onHttpCallback);
             }
         });
 
@@ -133,7 +132,6 @@ public class MainActivity extends Activity {
         public void onSuccess(String json) {
             super.onSuccess(json);
 
-            if (1 == 1) return;
             JSONObject ret = null;
 			try {
                 ret = new JSONObject(json);
