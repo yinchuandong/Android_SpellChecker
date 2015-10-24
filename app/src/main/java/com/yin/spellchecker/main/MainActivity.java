@@ -1,7 +1,5 @@
 package com.yin.spellchecker.main;
 
-import com.yin.spellchecker.R;
-
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -10,12 +8,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.yin.spellchecker.R;
+import com.yin.spellchecker.lib.SpellChecker;
+import com.yin.spellchecker.util.AppUtil;
 
 import net.tsz.afinal.FinalHttp;
 import net.tsz.afinal.http.AjaxCallBack;
 import net.tsz.afinal.http.AjaxParams;
 
 import org.json.JSONObject;
+
 
 public class MainActivity extends Activity {
 
@@ -33,6 +37,7 @@ public class MainActivity extends Activity {
 
     private FinalHttp finalHttp = null;
 	private OnHttpCallback onHttpCallback = null;
+    private String[] initParams = null;
 
 
 	@Override
@@ -42,6 +47,16 @@ public class MainActivity extends Activity {
 
         finalHttp = new FinalHttp();
 		onHttpCallback = new OnHttpCallback();
+
+        SpellChecker checker = new SpellChecker();
+        initParams = checker.init();
+        if(initParams == null || initParams.length != 2){
+            showText("初始化失败");
+            this.finish();
+            return;
+        }
+
+
 
 		init();
 		bindEvent();
@@ -86,9 +101,13 @@ public class MainActivity extends Activity {
                 fragmentTransac = fragmentManager.beginTransaction();
                 fragmentTransac.hide(fragEdit).show(fragCorrect).commit();
                 String ariticle = fragEdit.getInputText();
+                long curMillis = System.currentTimeMillis();
 				AjaxParams params = new AjaxParams();
 				params.put("article", ariticle);
-				finalHttp.post(C.api.correct, params, onHttpCallback);
+                params.put("token", AppUtil.getToken(MainActivity.this, initParams[0], initParams[1], curMillis));
+                params.put("time", String.valueOf(curMillis));
+//				finalHttp.post(C.api.correct, params, onHttpCallback);
+				finalHttp.post(C.api.base + "Index/register", params, onHttpCallback);
             }
         });
 
@@ -107,11 +126,14 @@ public class MainActivity extends Activity {
         @Override
         public void onFailure(Throwable t, int errorNo, String strMsg) {
             super.onFailure(t, errorNo, strMsg);
+            Toast.makeText(MainActivity.this, "注册失败，网络错误", Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onSuccess(String json) {
             super.onSuccess(json);
+
+            if (1 == 1) return;
             JSONObject ret = null;
 			try {
                 ret = new JSONObject(json);
@@ -130,5 +152,12 @@ public class MainActivity extends Activity {
             Log.d(TAG, json);
         }
     }
+
+
+    private void showText(String text){
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+
 
 }
