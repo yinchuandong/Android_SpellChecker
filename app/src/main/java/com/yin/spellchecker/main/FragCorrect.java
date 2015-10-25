@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -34,7 +35,9 @@ public class FragCorrect extends Fragment {
 	private View view;
 	private TextView crtLeftView;
 	private TextView crtRightView;
-	
+
+    private AlertDialog candiDialog;
+    private View dlgView;
 	private ListView wordListView;
 	private WordAdapter wordAdapter;
 
@@ -61,6 +64,10 @@ public class FragCorrect extends Fragment {
 		super.onActivityCreated(savedInstanceState);
         this.oldSpanBuilder = new SpannableStringBuilder();
 		this.newSpanBuilder = new SpannableStringBuilder();
+
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        dlgView = inflater.inflate(R.layout.dlg_candi_words, null, false);
+        this.wordListView = (ListView)dlgView.findViewById(R.id.dlg_list_view);
 		this.wordAdapter = new WordAdapter(this);
 		this.wordListView.setAdapter(wordAdapter);
         wrapFlag = new HashSet<String>();
@@ -70,13 +77,14 @@ public class FragCorrect extends Fragment {
 	private void initView() {
 		crtLeftView = (TextView) view.findViewById(R.id.crt_left_view);
         crtRightView = (TextView) view.findViewById(R.id.crt_right_view);
-		wordListView = (ListView)view.findViewById(R.id.crt_list_view);
 	}
 
     private void initData(){
         wrapFlag.add(".");
         wrapFlag.add("?");
         wrapFlag.add(";");
+
+        candiDialog = new AlertDialog.Builder(getActivity()).setTitle("候选词").setView(dlgView).create();
     }
 
 	/**
@@ -146,7 +154,7 @@ public class FragCorrect extends Fragment {
                     ForegroundColorSpan redSpan = new ForegroundColorSpan(Color.parseColor(getString(R.color.red_s)));
                     oldSpanStr.setSpan(redSpan,
                            0, oldWord.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    newSpanStr.setSpan(new MyClickableSpan(newWord),
+                    newSpanStr.setSpan(new MyClickableSpan(oldWord),
                             0, newWord.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 				}else{
                     oldSpanStr = new SpannableString(oldWord + " ");
@@ -199,7 +207,14 @@ public class FragCorrect extends Fragment {
             if(list == null){
                 list = new ArrayList<String>();
             }
-			wordAdapter.updateData(list);
+            //将更改的单词放到第一个
+            int oldId = list.indexOf(newWord);
+            if(oldId > 0){
+                list.remove(oldId);
+                list.add(0, newWord);
+            }
+            wordAdapter.updateData(list);
+            candiDialog.show();
 			Toast.makeText(getActivity(), "clickdspan:" + this.oldWord, Toast.LENGTH_SHORT).show();
 		}
 	}

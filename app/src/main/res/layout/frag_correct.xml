@@ -49,12 +49,5 @@
 
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/crt_list_view"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:background="@color/grey"
-        android:visibility="gone"></ListView>
 
 </RelativeLayout>
