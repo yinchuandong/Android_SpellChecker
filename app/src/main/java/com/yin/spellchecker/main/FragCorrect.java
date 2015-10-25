@@ -2,6 +2,7 @@ package com.yin.spellchecker.main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import android.app.Fragment;
@@ -31,7 +32,8 @@ import org.json.JSONObject;
 public class FragCorrect extends Fragment {
 
 	private View view;
-	private TextView correctView;
+	private TextView crtLeftView;
+	private TextView crtRightView;
 	
 	private ListView wordListView;
 	private WordAdapter wordAdapter;
@@ -41,8 +43,12 @@ public class FragCorrect extends Fragment {
 	private String[] punctArr;
     private HashMap<String, ArrayList<String>> candidateSet;
 
-	SpannableStringBuilder spannableBuilder;
-	
+    //需要换行的标点
+    private HashSet<String> wrapFlag;
+
+	SpannableStringBuilder oldSpanBuilder;
+	SpannableStringBuilder newSpanBuilder;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.view = inflater.inflate(R.layout.frag_correct, container, false);
@@ -53,15 +59,25 @@ public class FragCorrect extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		this.spannableBuilder = new SpannableStringBuilder();
+        this.oldSpanBuilder = new SpannableStringBuilder();
+		this.newSpanBuilder = new SpannableStringBuilder();
 		this.wordAdapter = new WordAdapter(this);
 		this.wordListView.setAdapter(wordAdapter);
+        wrapFlag = new HashSet<String>();
+        initData();
 	}
 
 	private void initView() {
-		correctView = (TextView) view.findViewById(R.id.crt_text_view);
+		crtLeftView = (TextView) view.findViewById(R.id.crt_left_view);
+        crtRightView = (TextView) view.findViewById(R.id.crt_right_view);
 		wordListView = (ListView)view.findViewById(R.id.crt_list_view);
 	}
+
+    private void initData(){
+        wrapFlag.add(".");
+        wrapFlag.add("?");
+        wrapFlag.add(";");
+    }
 
 	/**
 	 * 外部调用，由ajax返回过来的结果
@@ -114,39 +130,44 @@ public class FragCorrect extends Fragment {
 
 
 	private void displayData() {
-        spannableBuilder.clear();
+        oldSpanBuilder.clear();
+        newSpanBuilder.clear();
 		//输出
 		for (int i = 0; i < oldWordMatrix.length; i++) {
 			for (int j = 0; j < oldWordMatrix[i].length; j++) {
-				SpannableString oldSpanStr = null;
-				String oldStr = "";
+                SpannableString oldSpanStr;
+				SpannableString newSpanStr;
 				String oldWord = oldWordMatrix[i][j];
 				String newWord = newWordMatrix[i][j];
+
 				if (!oldWord.equals(newWord)) {
-					oldStr += oldWord + "/" + newWord + " ";
-					oldSpanStr = new SpannableString(oldStr);
-					oldSpanStr.setSpan(new ForegroundColorSpan(Color.parseColor(getString(R.color.red_s))),
-							oldStr.length() - newWord.length() - oldWord.length() - 2,
-							oldStr.length() - newWord.length() - 2,
-							Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-					checkSpell(oldWord, oldSpanStr, oldStr.length() - newWord.length() - 1, oldStr.length() - 1);
+                    oldSpanStr = new SpannableString(oldWord + " ");
+                    newSpanStr = new SpannableString(newWord + " ");
+                    ForegroundColorSpan redSpan = new ForegroundColorSpan(Color.parseColor(getString(R.color.red_s)));
+                    oldSpanStr.setSpan(redSpan,
+                           0, oldWord.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    newSpanStr.setSpan(new MyClickableSpan(newWord),
+                            0, newWord.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 				}else{
-					oldStr += oldWord + " ";
-					oldSpanStr = new SpannableString(oldStr);
+                    oldSpanStr = new SpannableString(oldWord + " ");
+					newSpanStr = new SpannableString(newWord + " ");
 				}
-				spannableBuilder.append(oldSpanStr);
+                oldSpanBuilder.append(oldSpanStr);
+				newSpanBuilder.append(newSpanStr);
 			}
 			//在每句最后一个空格前插入标点符号
-			spannableBuilder.insert(spannableBuilder.length() - 1, punctArr[i]);
+            oldSpanBuilder.insert(oldSpanBuilder.length() - 1, punctArr[i]);
+			newSpanBuilder.insert(newSpanBuilder.length() - 1, punctArr[i]);
+            if(wrapFlag.contains(punctArr[i])){
+                oldSpanBuilder.append(new SpannableString("\n"));
+                newSpanBuilder.append(new SpannableString("\n"));
+            }
 		}
 		
-		correctView.setText(spannableBuilder);
-		correctView.setMovementMethod(LinkMovementMethod.getInstance());
-	}
-
-	private void checkSpell(String word, SpannableString spannableStr, int start, int end) {
-		spannableStr.setSpan(new MyClickableSpan(word), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+		crtLeftView.setText(oldSpanBuilder);
+		crtLeftView.setMovementMethod(LinkMovementMethod.getInstance());
+        crtRightView.setText(newSpanBuilder);
+        crtRightView.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 
 	private class MyClickableSpan extends ClickableSpan {
@@ -169,15 +190,11 @@ public class FragCorrect extends Fragment {
 		public void onClick(View widget) {
 			TextView textView = (TextView)widget;
 			Layout layout = textView.getLayout();
-			
+
 			this.start = textView.getSelectionStart();
 			this.end = textView.getSelectionEnd();
 			newWord =textView.getText().subSequence(start, end).toString();
-			
-//			ArrayList<String> list = new ArrayList<String>();
-//			for(int i = 0; i < 10; i++){
-//				list.add(oldWord + ":" + newWord + "-" + i);
-//			}
+
             ArrayList<String> list = candidateSet.get(oldWord);
             if(list == null){
                 list = new ArrayList<String>();
@@ -186,11 +203,11 @@ public class FragCorrect extends Fragment {
 			Toast.makeText(getActivity(), "clickdspan:" + this.oldWord, Toast.LENGTH_SHORT).show();
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	
 	
 	
