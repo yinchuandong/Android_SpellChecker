@@ -3,6 +3,7 @@
 #include <string>
 #include <jni.h>
 #include <android/log.h>
+#include "json/json.h"
 
 using namespace std;
 
@@ -37,6 +38,15 @@ void testRead(const char *filename) {
 
 }
 
+void testJson(){
+    Json::Value item;
+    item["word"] = "hello";
+    item["pp"] = "pp_hello";
+    const char* json_str = item.toStyledString().c_str();
+
+    LOGD("%s", json_str);
+}
+
 JNIEXPORT jobjectArray JNICALL Java_com_yin_spellchecker_lib_SpellChecker_init(
         JNIEnv *env, jobject obj) {
 
@@ -52,6 +62,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_yin_spellchecker_lib_SpellChecker_init(
     for (int i = 0; i < size; i++) {
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(arr[i]));
     }
+
+    testJson();
     return ret;
 }
 
