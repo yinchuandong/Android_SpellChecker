@@ -4,6 +4,7 @@
 #include <jni.h>
 #include <android/log.h>
 #include "json/json.h"
+#include "EngDict.h"
 
 using namespace std;
 
@@ -11,6 +12,11 @@ using namespace std;
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 #define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
+
+EngDict *pEngDict = NULL;
+
+
 
 
 #ifdef __cplusplus
@@ -35,6 +41,7 @@ void testRead(const char *filename) {
             LOGD("now is reading: %d lines", count);
         }
     }
+    fclose(file);
 
 }
 
@@ -66,6 +73,36 @@ JNIEXPORT jobjectArray JNICALL Java_com_yin_spellchecker_lib_SpellChecker_init(
     testJson();
     return ret;
 }
+
+JNIEXPORT void JNICALL
+Java_com_yin_spellchecker_lib_SpellChecker_loadDict(JNIEnv *env, jobject instance) {
+
+    LOGD("loadDict");
+    if(pEngDict == NULL){
+        pEngDict = new EngDict();
+        int code = pEngDict->init();
+        LOGD("dict init code: %d", code);
+    }
+
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_yin_spellchecker_lib_SpellChecker_findDict(JNIEnv *env, jobject instance, jstring key_) {
+    const char *key = env->GetStringUTFChars(key_, 0);
+
+    LOGD("findDict: %s", key);
+    string result = pEngDict->find(key);
+    if(result.length() == 0){
+        LOGD("result find error");
+    }
+    Json::FastWriter writer;
+    string tmp = writer.write(result);
+    LOGD("resutl: %s", result.c_str());
+
+    env->ReleaseStringUTFChars(key_, key);
+    return env->NewStringUTF(tmp.c_str());
+}
+
 
 
 #ifdef __cplusplus

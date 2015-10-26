@@ -23,6 +23,7 @@ model {
 //        CFlags += "D_GLIBCXX_PERMIT_BACKWARD_HASH"
         cppFlags += "-DJSON_IS_AMALGAMATION"
         cppFlags += "-fexceptions"
+        cppFlags += "-std=c++11"
         stl = "gnustl_static"
         //stl = "stlport_static"
     }

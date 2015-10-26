@@ -1,9 +1,5 @@
 package com.yin.spellchecker.lib;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
 public class SpellChecker {
 
 	static{
@@ -12,5 +8,7 @@ public class SpellChecker {
 	
 	public native String[] init();
 
-	
+	public native void loadDict();
+
+	public native String findDict(String key);
 }
