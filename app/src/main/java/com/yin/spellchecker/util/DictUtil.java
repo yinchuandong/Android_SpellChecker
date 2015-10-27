@@ -73,17 +73,17 @@ public class DictUtil {
     }
 
     public String find(String key){
-        String ret = "";
 
         Addr addr = indexMap.get(key);
         if(addr == null){
-           return ret;
+            return null;
         }
 
+        String ret = null;
         try {
-            byte[] buff = new byte[(int)addr.size];
+            byte[] buff = new byte[(int)addr.size - 1];
             dictFile.seek(addr.start + 1);// skip space
-            dictFile.read(buff, 0, (int) addr.size);
+            dictFile.read(buff);
             ret = new String(buff);
         } catch (IOException e) {
             e.printStackTrace();

@@ -15,6 +15,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -243,11 +244,77 @@ public class FragCorrect extends Fragment {
         });
     }
 
+    /**
+     * 显示翻译
+     * @param key
+     */
     private void showTranslate(String key){
         DictUtil util = DictUtil.getInstance();
-        String json = util.find(key);
+        String jsonStr = util.find(key);
 
-        Log.d(TAG, json);
+        if(jsonStr == null){
+            dlgDetailView.setText("暂无词义");
+        }
+
+        try {
+            JSONObject obj = new JSONObject(jsonStr);
+
+            Log.d(TAG, obj.toString());
+            Log.d(TAG, obj.toString().length() + "");
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            String word = obj.optString("word");
+            SpannableString wordSpan = new SpannableString(word);
+            wordSpan.setSpan(new AbsoluteSizeSpan(30), 0, word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builder.append(wordSpan);
+            builder.append("\n\n");
+
+            //变换形式
+            if(obj.optString("pt").length() > 0){
+                builder.append("过去式：" + obj.optString("pt"));
+                builder.append("\n");
+            }
+            if(obj.optString("p.p").length() > 0){
+                builder.append("过去分词：" + obj.optString("p.p"));
+                builder.append("\n");
+            }
+            if(obj.optString("p.pr").length() > 0){
+                builder.append("现在分词：" + obj.opt("p.pr"));
+                builder.append("\n");
+            }
+            if(obj.optString("3ps").length() > 0){
+                builder.append("三人称单数：" + obj.optString("3ps"));
+                builder.append("\n");
+            }
+            if(obj.optString("plural").length() > 0){
+                builder.append("复数：" + obj.optString("plural"));
+                builder.append("\n");
+            }
+            builder.append("\n");
+
+            //解析词性和词义
+            JSONArray posArr = obj.optJSONArray("pos");
+            if(posArr != null){
+                for (int i = 0; i < posArr.length(); i++){
+                    JSONObject posObj = posArr.getJSONObject(i);
+                    String posKey = (String)posObj.keys().next();
+                    JSONArray chnArr = posObj.getJSONArray(posKey);
+
+                    String posLine = posKey + ": ";
+                    for(int j = 0; j < chnArr.length(); j++){
+                       posLine += chnArr.getString(j);
+                    }
+
+                    builder.append(posLine + "\n\n");
+                }
+            }
+
+            dlgDetailView.setText(builder);
+            dlgDetailView.setMovementMethod(LinkMovementMethod.getInstance());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, jsonStr);
     }
 
 
