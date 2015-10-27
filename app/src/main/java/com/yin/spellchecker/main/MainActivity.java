@@ -56,9 +56,6 @@ public class MainActivity extends Activity {
             return;
         }
 
-//        checker.loadDict();
-//        String result = checker.findDict("play");
-
 		init();
 		bindEvent();
 	}

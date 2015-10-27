@@ -8,7 +8,7 @@ public class SpellChecker {
 	
 	public native String[] init();
 
-	public native void loadDict();
+	public native String[] loadDict();
 
 	public native String findDict(String key);
 }

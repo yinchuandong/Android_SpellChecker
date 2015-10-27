@@ -66,7 +66,37 @@ string EngDict::find(string key) {
     fseek(dictFile, wAddr.start, SEEK_SET);
     char *rBuff = new char[wAddr.size];
     fread(rBuff, (unsigned long)wAddr.size, 1, dictFile);
-    rBuff = rBuff + 8;
+//    rBuff = rBuff + 8;
 
-    return rBuff;
+//    char rBuff[2048];
+//    fgets(rBuff, sizeof(rBuff), dictFile);
+
+    string str = rBuff;
+    return str;
+}
+
+char* EngDict::filterAscii(char *str)
+{
+    int oldPtr = 0;
+    int newPtr = 0;
+
+    while(str[oldPtr] != '/0')
+    {
+        if(str[oldPtr] > 0x81 || str[oldPtr] == 0x81 && str[oldPtr + 1] >= 0x41)
+        {
+            str[newPtr++] = str[oldPtr++];
+            str[newPtr++] = str[oldPtr++];
+        }
+        else if(str[oldPtr] >= '0' && str[oldPtr] <= '9'
+                || str[oldPtr] >= 'a' && str[oldPtr] <= 'z'
+                || str[oldPtr] >= 'A' && str[oldPtr] <= 'Z')
+        {
+            oldPtr++;
+        }
+        else
+            str[newPtr++] = str[oldPtr++];
+    }
+    str[newPtr] = '/0';
+
+    return str;
 }

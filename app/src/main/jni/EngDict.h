@@ -29,6 +29,7 @@ class EngDict {
 private:
     const char *pathDictIndex = "/system/usr/hmm/index.dat";
     const char *pathDictData = "/system/usr/hmm/dict.dat";
+//    const char *pathDictData = "/system/usr/hmm/dict.json";
     FILE *indexFile;
     FILE *dictFile;
 
@@ -40,6 +41,7 @@ public:
     int init();
     string find(string key);
 
+    char *filterAscii(char *str);
 };
 
 

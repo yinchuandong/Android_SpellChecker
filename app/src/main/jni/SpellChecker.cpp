@@ -14,11 +14,6 @@ using namespace std;
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
 
-EngDict *pEngDict = NULL;
-
-
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -70,37 +65,52 @@ JNIEXPORT jobjectArray JNICALL Java_com_yin_spellchecker_lib_SpellChecker_init(
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(arr[i]));
     }
 
-    testJson();
     return ret;
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jobjectArray  JNICALL
 Java_com_yin_spellchecker_lib_SpellChecker_loadDict(JNIEnv *env, jobject instance) {
-
-    LOGD("loadDict");
-    if(pEngDict == NULL){
-        pEngDict = new EngDict();
-        int code = pEngDict->init();
-        LOGD("dict init code: %d", code);
+    int size = 2;
+    const char *arr[2] =
+            {"/system/usr/hmm/index.dat",
+             "/system/usr/hmm/dict.dat",
+            };
+    jobjectArray ret;
+    ret = (jobjectArray) env->NewObjectArray(size,
+                                             env->FindClass("java/lang/String"),
+                                             env->NewStringUTF(""));
+    for (int i = 0; i < size; i++) {
+        env->SetObjectArrayElement(ret, i, env->NewStringUTF(arr[i]));
     }
 
+    return ret;
 }
 
+
+
+/**
+ * 暂时没用到
+ */
 JNIEXPORT jstring JNICALL
 Java_com_yin_spellchecker_lib_SpellChecker_findDict(JNIEnv *env, jobject instance, jstring key_) {
     const char *key = env->GetStringUTFChars(key_, 0);
 
-    LOGD("findDict: %s", key);
-    string result = pEngDict->find(key);
-    if(result.length() == 0){
-        LOGD("result find error");
-    }
-    Json::FastWriter writer;
-    string tmp = writer.write(result);
-    LOGD("resutl: %s", result.c_str());
-
+//    LOGD("findDict: %s", key);
+//    string result = pEngDict->find(key);
+//    if(result.length() == 0){
+//        LOGD("result find error");
+//    }
+//    Json::FastWriter writer;
+//    string tmp = writer.write(result);
+//    char *a = new char[result.length()];
+//    strcpy(a, result.c_str());
+//    a[result.length() - 8] = '\0';
+//
+//    LOGD("old result: %s", result.c_str());
+//    LOGD("new result: %s", a);
+//
     env->ReleaseStringUTFChars(key_, key);
-    return env->NewStringUTF(tmp.c_str());
+    return env->NewStringUTF("");
 }
 
 

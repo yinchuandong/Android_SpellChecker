@@ -17,14 +17,17 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yin.spellchecker.R;
+import com.yin.spellchecker.util.DictUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,15 +35,21 @@ import org.json.JSONObject;
 
 public class FragCorrect extends Fragment {
 
+    private final static String TAG = "FragCorrect";
+
+	//主界面
 	private View view;
 	private TextView crtLeftView;
 	private TextView crtRightView;
 
+	//弹出框
     private AlertDialog candiDialog;
     private View dlgView;
-	private ListView wordListView;
-	private WordAdapter wordAdapter;
+	private TextView dlgDetailView;
+	private ListView dlgListView;
+	private WordAdapter dlgWordAdapter;
 
+	//句子结果
 	private String[][] oldWordMatrix;
 	private String[][] newWordMatrix;
 	private String[] punctArr;
@@ -66,12 +75,15 @@ public class FragCorrect extends Fragment {
 		this.newSpanBuilder = new SpannableStringBuilder();
 
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        dlgView = inflater.inflate(R.layout.dlg_candi_words, null, false);
-        this.wordListView = (ListView)dlgView.findViewById(R.id.dlg_list_view);
-		this.wordAdapter = new WordAdapter(this);
-		this.wordListView.setAdapter(wordAdapter);
-        wrapFlag = new HashSet<String>();
+        this.dlgView = inflater.inflate(R.layout.dlg_candi_words, null, false);
+		this.dlgDetailView = (TextView)dlgView.findViewById(R.id.dlg_detail_view);
+        this.dlgListView = (ListView)dlgView.findViewById(R.id.dlg_list_view);
+		this.dlgWordAdapter = new WordAdapter(this);
+		this.dlgListView.setAdapter(dlgWordAdapter);
+        this.wrapFlag = new HashSet<String>();
+
         initData();
+        bindEvent();
 	}
 
 	private void initView() {
@@ -213,11 +225,30 @@ public class FragCorrect extends Fragment {
                 list.remove(oldId);
                 list.add(0, newWord);
             }
-            wordAdapter.updateData(list);
+            dlgWordAdapter.updateData(list);
             candiDialog.show();
+            showTranslate(newWord);
 			Toast.makeText(getActivity(), "clickdspan:" + this.oldWord, Toast.LENGTH_SHORT).show();
 		}
 	}
+
+
+    private void bindEvent(){
+        dlgListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String word = (String) dlgWordAdapter.getItem(position);
+                showTranslate(word);
+            }
+        });
+    }
+
+    private void showTranslate(String key){
+        DictUtil util = DictUtil.getInstance();
+        String json = util.find(key);
+
+        Log.d(TAG, json);
+    }
 
 
 
