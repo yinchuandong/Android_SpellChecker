@@ -27,8 +27,8 @@ typedef unordered_map<string, Addr> TIndexMap;
 class EngDict {
 
 private:
-    const char *pathDictIndex = "/system/usr/hmm/index.dat";
-    const char *pathDictData = "/system/usr/hmm/dict.dat";
+    const char *pathDictIndex = "/system/usr/hmm/index1.dat";
+    const char *pathDictData = "/system/usr/hmm/dict1.dat";
 //    const char *pathDictData = "/system/usr/hmm/dict.json";
     FILE *indexFile;
     FILE *dictFile;

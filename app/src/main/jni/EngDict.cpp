@@ -66,13 +66,17 @@ string EngDict::find(string key) {
     fseek(dictFile, wAddr.start, SEEK_SET);
     char *rBuff = new char[wAddr.size];
     fread(rBuff, (unsigned long)wAddr.size, 1, dictFile);
-//    rBuff = rBuff + 8;
 
-//    char rBuff[2048];
-//    fgets(rBuff, sizeof(rBuff), dictFile);
+    //remove the noisy char at the end of result
+    for(int i = wAddr.size - 1; i >= 0; i--){
+        if(rBuff[i] != '}'){
+            rBuff[i] = '\0';
+        }else{
+            break;
+        }
+    }
 
-    string str = rBuff;
-    return str;
+    return rBuff;
 }
 
 char* EngDict::filterAscii(char *str)
