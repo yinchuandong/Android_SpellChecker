@@ -7,6 +7,8 @@
     <string name="main_correct">评分</string>
     <string name="main_clear">清空</string>
     <string name="title_activity_register">RegisterActivity</string>
+    <string name="crt_origin_text">原始文本</string>
+    <string name="crt_correct_text">纠错文本</string>
 
     <string name="reg_sign_in">注册</string>
     <string name="reg_password_hint">请输入密码</string>

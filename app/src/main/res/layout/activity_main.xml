@@ -30,6 +30,7 @@
             android:gravity="center"
             android:text="@string/main_edit"
             android:textSize="30sp"
+            android:textColor="@color/black"
             android:background="@drawable/shape_btn_corner"
              />
         
@@ -42,6 +43,7 @@
             android:gravity="center"
             android:text="@string/main_correct"
             android:textSize="30sp"
+            android:textColor="@color/black"
             android:background="@drawable/shape_btn_corner"
              />
         <TextView
@@ -52,6 +54,7 @@
             android:gravity="center"
             android:text="@string/main_clear"
             android:textSize="30sp"
+            android:textColor="@color/black"
             android:background="@drawable/shape_btn_corner"
             />
     </RelativeLayout>

@@ -1,10 +1,36 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="horizontal"
-    android:paddingLeft="10dp">
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/crt_origin_text"
+            android:textSize="30sp"
+            android:textColor="@color/white"
+            android:background="@color/red_l"
+            android:gravity="center"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/crt_correct_text"
+            android:textSize="30sp"
+            android:textColor="@color/white"
+            android:background="@color/green_l"
+            android:gravity="center"
+            />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,12 +51,13 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="Roboto-Light"
                 android:padding="5dp"
-                android:textSize="26sp" />
+                android:textSize="26sp"
+                android:textColor="@color/black"/>
         </ScrollView>
         <TextView
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/red_s"/>
+            android:background="@color/blue_l"/>
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -44,10 +71,11 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="Roboto-Light"
                 android:padding="5dp"
-                android:textSize="26sp" />
+                android:textSize="26sp"
+                android:textColor="@color/black"/>
         </ScrollView>
 
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>
