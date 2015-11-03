@@ -3,6 +3,7 @@ package com.yin.spellchecker.main;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.yin.spellchecker.R;
 import com.yin.spellchecker.lib.SpellChecker;
 import com.yin.spellchecker.util.AppUtil;
+import com.yin.spellchecker.util.DictUtil;
 
 import net.tsz.afinal.FinalHttp;
 import net.tsz.afinal.http.AjaxCallBack;
@@ -44,6 +46,12 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+        SharedPreferences sp = AppUtil.getSharedPreferences(this);
+        if(!sp.getBoolean(C.sp.KEY_SIGN, false)){
+            showText("没注册");
+            this.finish();
+            return;
+        }
 
         finalHttp = new FinalHttp();
 		onHttpCallback = new OnHttpCallback();
@@ -56,12 +64,13 @@ public class MainActivity extends Activity {
             return;
         }
 
-		init();
+		initView();
+        initData();
 		bindEvent();
 	}
 
 
-	private void init() {
+	private void initView() {
 		
 		editView = (TextView)findViewById(R.id.main_edit_view);
 		correctView = (TextView)findViewById(R.id.main_correct_view);
@@ -78,7 +87,17 @@ public class MainActivity extends Activity {
 		fragmentTransac.hide(fragCorrect);
 		fragmentTransac.commit();
 	}
-	
+
+
+    private void initData(){
+        new Thread(){
+            @Override
+            public void run() {
+                // preload dict index
+                DictUtil.getInstance();
+            }
+        }.start();
+    }
 	
 	private void bindEvent(){
 		editView.setOnClickListener(new OnClickListener() {
@@ -123,7 +142,7 @@ public class MainActivity extends Activity {
         @Override
         public void onFailure(Throwable t, int errorNo, String strMsg) {
             super.onFailure(t, errorNo, strMsg);
-            Toast.makeText(MainActivity.this, "注册失败，网络错误", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "请求失败，网络错误", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -134,7 +153,6 @@ public class MainActivity extends Activity {
 			try {
                 ret = new JSONObject(json);
                 if(ret.getInt("status") == 1){
-                    Log.d(TAG, ret.toString());
                     fragCorrect.setCorrectResult(ret.getJSONObject("data"), ret.getJSONObject("candidate"));
                     fragmentTransac = fragmentManager.beginTransaction();
                     fragmentTransac.hide(fragEdit).show(fragCorrect).commit();
@@ -145,7 +163,6 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 			}
 
-            Log.d(TAG, json);
         }
     }
 

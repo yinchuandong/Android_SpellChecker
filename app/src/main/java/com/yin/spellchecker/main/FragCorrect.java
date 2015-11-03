@@ -229,7 +229,6 @@ public class FragCorrect extends Fragment {
             dlgWordAdapter.updateData(list);
             candiDialog.show();
             showTranslate(newWord);
-			Toast.makeText(getActivity(), "clickdspan:" + this.oldWord, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -259,8 +258,8 @@ public class FragCorrect extends Fragment {
         try {
             JSONObject obj = new JSONObject(jsonStr);
 
-            Log.d(TAG, obj.toString());
-            Log.d(TAG, obj.toString().length() + "");
+//            Log.d(TAG, obj.toString());
+//            Log.d(TAG, obj.toString().length() + "");
             SpannableStringBuilder builder = new SpannableStringBuilder();
             String word = obj.optString("word");
             SpannableString wordSpan = new SpannableString(word);
